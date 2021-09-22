@@ -1,14 +1,20 @@
+/*
+ * @Author: TechAle
+ * @Since: 21/09/21
+ */
+
 #include <iostream>
-#include "board.h"
+#include "game.h"
 #include "play.h"
+#include "train.h"
 using namespace std;
 
 int main() {
     cout << "Tic Tac Toe";
-    bool game = true;
+    bool play = true;
 
     // Main loop
-    while (game) {
+    while (play) {
 
         // Choose
         cout        << endl
@@ -25,14 +31,15 @@ int main() {
         // Switch looks good
         switch(choose) {
             case 1:
+                train();
                 break;
             case 2:
                 break;
             case 3:
-                play();
+                game();
                 break;
             case 4:
-                game = false;
+                play = false;
                 break;
         }
 

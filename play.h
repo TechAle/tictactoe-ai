@@ -1,6 +1,7 @@
-//
-// Created by alessandro on 21/09/2021.
-//
+/*
+ * @Author: TechAle
+ * @Since: 21/09/21
+ */
 using namespace std;
 
 void play() {
@@ -33,9 +34,9 @@ void play() {
     }
 
     // Game loop
-    board game;
+    game game;
     while (!game.isOver()) {
-        // Print board
+        // Print game
         game.print();
         // Get input
         do {
