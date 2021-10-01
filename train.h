@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include "aiBoard.h"
 
 void train() {
 
@@ -36,7 +37,8 @@ void train() {
     }
 
     // Start training
-
+    aiBoard trainingSet = aiBoard();
+    int a = 0;
 
 }
 

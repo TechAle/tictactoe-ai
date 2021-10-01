@@ -6,22 +6,24 @@
 
 using namespace std;
 
-class board {
+class aiBoard {
 private:
     int table[9]{};
-    board* father;
-    list<board*> childrens;
+    aiBoard* father;
+    list<aiBoard*> childrens;
 
     void createChildrens() {
-        for(int i : table) {
-            if (i == 0) {
+        int  nextPlayer = this->round % 2 + 1;
+        for(int i = 0; i < 9; i++) {
+            if (table[i] == 0) {
+                // New table
                 int newTable[9];
-
+                // Copy original
                 std::copy(std::begin(this->table), std::end(this->table), std::begin(newTable));
-
-                newTable[i] = this->nextPlayer;
-
-                childrens.push_front(new board());
+                // Set new value
+                newTable[i] = nextPlayer;
+                // Push new chidren
+                childrens.push_front(new aiBoard(newTable, this, round));
             }
         }
     }
@@ -29,24 +31,21 @@ private:
     int win = 0;
     int defeat = 0;
     int round;
-    int nextPlayer;
 public:
-    // First board, empty
-    board() {
+    // First aiBoard, empty
+    aiBoard() {
         std::fill(table, table+9, 0);
-        this->father = nullptr;
+        this->father = this;
         this->round = 0;
-        this->nextPlayer = 0;
         createChildrens();
     }
 
-    // New board
-    explicit board(const int table[9], board *father, int round) {
+    // New aiBoard
+    explicit aiBoard(const int table[9], aiBoard *father, int round) {
         for(int i = 0; i < 9; i++)
             this->table[i] = *(table + i);
         this->father = father;
         this->round = round + 1;
-        this->nextPlayer = this->round % 2 + 1;
         createChildrens();
     }
 
@@ -64,15 +63,19 @@ public:
      * Stage:
      * false -> Go to beginning
      * true -> Lets go down
+     *
+     * target -> The beginning
+     *
+     * aimRound -> Which round we want
      */
-    board* checkExists(board *target, int aimRound, bool stage) {
+    aiBoard* checkExists(aiBoard *target, int aimRound, bool stage) {
 
         // If we have to go at the top
         if (!stage) {
             // If we are not at the top
             if (this->father != nullptr) {
                 // Lets continue. Temp contains the result
-                board *temp = this->father->checkExists(target, aimRound, stage);
+                aiBoard *temp = this->father->checkExists(target, aimRound, stage);
             // We are at the top
             } else stage = true;
         }
@@ -80,7 +83,7 @@ public:
         // If we have to go down
         if (stage) {
             // For every childrens
-            for(board *toCheck : childrens) {
+            for(aiBoard *toCheck : childrens) {
                 // If the round is the same
                 if (toCheck->round == aimRound) {
                     // Check if it's not the one we started
