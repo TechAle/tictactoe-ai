@@ -12,18 +12,29 @@ private:
     aiBoard* father;
     list<aiBoard*> childrens;
 
+    /*
+     * This second type, teorically, is the best one but, it's really too slow.
+     * Basically, for every childrens it checks if there is another children that is the same.
+     * If yes, it will redirect to that children
+     */
+
     void createChildrens() {
         int  nextPlayer = this->round % 2 + 1;
+
         for(int i = 0; i < 9; i++) {
             if (table[i] == 0) {
+
                 // New table
                 int newTable[9];
                 // Copy original
                 std::copy(std::begin(this->table), std::end(this->table), std::begin(newTable));
                 // Set new value
                 newTable[i] = nextPlayer;
-                // Push new chidren
-                childrens.push_front(new aiBoard(newTable, this, round));
+                aiBoard* exists = checkExists(newTable, this->round + 1);
+                if (exists == nullptr) {
+                    // Push new chidren
+                    childrens.push_front(new aiBoard(newTable, this->father, round));
+                } else childrens.push_front(exists);
             }
         }
     }
@@ -59,6 +70,27 @@ public:
         this->defeat++;
     }
 
+    aiBoard* checkChildren(const int toCheck[9], aiBoard* aimCheck, int aimRound) {
+        if (aimRound > aimCheck->round) {
+            aiBoard* temp;
+            for(aiBoard* child : aimCheck->childrens)
+                if ((temp = checkChildren(toCheck, child, aimRound)) != nullptr)
+                    return temp;
+        } else {
+            bool found = true;
+            for (int i = 0; i < 9; i++)
+                if (aimCheck->table[i] != toCheck[i]) {
+                    found = false;
+                    break;
+                }
+            if (found)
+                return aimCheck;
+
+        }
+
+        return nullptr;
+    }
+
     /*
      * Stage:
      * false -> Go to beginning
@@ -68,39 +100,8 @@ public:
      *
      * aimRound -> Which round we want
      */
-    aiBoard* checkExists(aiBoard *target, int aimRound, bool stage) {
-
-        // If we have to go at the top
-        if (!stage) {
-            // If we are not at the top
-            if (this->father != nullptr) {
-                // Lets continue. Temp contains the result
-                aiBoard *temp = this->father->checkExists(target, aimRound, stage);
-            // We are at the top
-            } else stage = true;
-        }
-
-        // If we have to go down
-        if (stage) {
-            // For every childrens
-            for(aiBoard *toCheck : childrens) {
-                // If the round is the same
-                if (toCheck->round == aimRound) {
-                    // Check if it's not the one we started
-                    if (target != toCheck) {
-                        // Check if the array is the same
-                        for(int i = 0; i < 9; i++)
-                            if (target->table[i] != toCheck->table[i])
-                                // It's not
-                                return nullptr;
-                        // Return new value
-                        return toCheck;
-                    }
-                } else toCheck->checkExists(target, aimRound + 1, true);
-            }
-        }
-
-        return nullptr;
+    aiBoard* checkExists(const int target[9], int aimRound) {
+        return checkChildren(target, this->father, aimRound);
     }
 
 
