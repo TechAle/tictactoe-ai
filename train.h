@@ -38,6 +38,7 @@ void train() {
 
     // Start training
     aiBoard trainingSet = aiBoard();
+
     int a = 0;
 
 }
