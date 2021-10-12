@@ -35,7 +35,7 @@ void play() {
 
     // Game loop
     game game;
-    while (!game.isOver()) {
+    while (game.isOver()) {
         // Print game
         game.print();
         // Get input
