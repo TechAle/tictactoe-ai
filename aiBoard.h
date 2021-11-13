@@ -10,7 +10,6 @@ using namespace std;
 class aiBoard {
 private:
     int table[9]{};
-    aiBoard* beginning;
     aiBoard* father;
     vector<aiBoard*> childrens;
 
@@ -32,7 +31,7 @@ private:
                 std::copy(std::begin(this->table), std::end(this->table), std::begin(newTable));
                 // Set new values
                 newTable[i] = nextPlayer;
-                childrens.push_back(new aiBoard(newTable, this->beginning, this, round, i));
+                childrens.push_back(new aiBoard(newTable, this, round, i));
                 /*
                  * Old algo, good concept just not as optimized as it could be + too slow.
                  * I think this would be good in other types of games that are more complex
@@ -58,10 +57,38 @@ private:
     // N^Round (used for "performance purpose" in the slow algo)
     int round;
 public:
+
+    /*
+     * Struttura file:
+     * tabella
+     * padre
+     * vincite/perdite
+     * tie
+     * giocate
+     * round
+     *
+     * Diviso con |
+     */
+    void printFile(ofstream& file) {
+        for(auto i : table)
+            file << i;
+        file << "|";
+
+        if (father == nullptr)
+            file << "null|";
+        else file << father << "|";
+
+        file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame
+                << played   << "|" << round     << "\n";
+
+        for(auto child : childrens)
+            child->printFile(file);
+
+    }
+
     // First aiBoard, empty
     aiBoard() {
         std::fill(table, table+9, 0);
-        this->beginning = nullptr;
         this->father = nullptr;
         this->round = 0;
         played = -1;
@@ -69,12 +96,11 @@ public:
     }
 
     // New aiBoard
-    explicit aiBoard(const int table[9], aiBoard *beginning, aiBoard *father, int round, int played) {
+    explicit aiBoard(const int table[9], aiBoard *father, int round, int played) {
         // Copy new table
         for(int i = 0; i < 9; i++)
             this->table[i] = *(table + i);
         // Set new values
-        this->beginning = beginning;
         this->father = father;
         this->round = round + 1;
         this->played = played;
