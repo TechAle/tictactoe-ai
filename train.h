@@ -36,7 +36,7 @@ void train() {
         cout << endl << "loading lol";
     }
 
-    // Start training
+    // Start trainingAl
     aiBoard trainingSet = aiBoard();
 
     int a = 0;

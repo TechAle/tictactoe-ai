@@ -3,6 +3,7 @@
  * @Since: 21/09/21
  */
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ private:
     int table[9]{};
     aiBoard* beginning;
     aiBoard* father;
-    list<aiBoard*> childrens;
+    vector<aiBoard*> childrens;
 
     /*
      * This second type, teorically, is the best one but, it's really too slow.
@@ -31,7 +32,7 @@ private:
                 std::copy(std::begin(this->table), std::end(this->table), std::begin(newTable));
                 // Set new values
                 newTable[i] = nextPlayer;
-                childrens.push_front(new aiBoard(newTable, this->beginning, this, round, i));
+                childrens.push_back(new aiBoard(newTable, this->beginning, this, round, i));
                 /*
                  * Old algo, good concept just not as optimized as it could be + too slow.
                  * I think this would be good in other types of games that are more complex
@@ -45,11 +46,13 @@ private:
     }
 
     // Counter win
-    int win = 0;
-    // Counter defeat
-    int defeat = 0;
+    int winCross = 0;
+    int winCircle = 0;
+    // Counter lost
+    int lostCross = 0,
+        lostCircle = 0;
     // Counter tie
-    int tie = 0;
+    int tieGame = 0;
     // What was played
     int played;
     // N^Round (used for "performance purpose" in the slow algo)
@@ -77,7 +80,7 @@ public:
         this->played = played;
         // If winning, update
         if (isWinning(this->table))
-            updateWin();
+            updateWin(this->round % 2 == 0);
         else if (this->round == 9)
             updateTie();
         else
@@ -85,15 +88,22 @@ public:
     }
 
     // Update numbers of win
-    void updateWin() {
-        this->win++;
+    void updateWin(bool circle) {
+        if (circle) {
+            this->winCircle++;
+            this->lostCross++;
+        }
+        else {
+            this->winCross++;
+            this->lostCircle++;
+        }
         this->played++;
         if (this->father != nullptr)
-            this->father->updateWin();
+            this->father->updateWin(circle);
     }
 
     void updateTie() {
-        this->tie++;
+        this->tieGame++;
         this->played++;
         if (this->father != nullptr)
             this->father->updateTie();
@@ -121,9 +131,6 @@ public:
         return nullptr;
     }
 
-    aiBoard* checkExists(const int target[9], int aimRound) {
-        return checkChildren(target, this->beginning, aimRound);
-    }
 
 
 };
