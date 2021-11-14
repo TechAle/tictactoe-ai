@@ -4,6 +4,16 @@
  */
 
 #include <iostream>
+#include <algorithm>
+#include <cctype>
+#include <string>
+#include <iostream>
+#include <list>
+#include <fstream>
+#include <iomanip>
+#include <ctime>
+#include <sstream>
+#include <filesystem>
 #include "game.h"
 #include "play.h"
 #include "train.h"
@@ -11,18 +21,17 @@ using namespace std;
 
 int main() {
     cout << "Tic Tac Toe";
-    bool play = true;
+    bool gameLoop = true;
 
     // Main loop
-    while (play) {
+    while (gameLoop) {
 
         // Choose
         cout        << endl
                     << "Select option:" << endl
                     << "1) Train" << endl
-                    << "2) Load" << endl
-                    << "3) Play" << endl
-                    << "4) Close" << endl
+                    << "2) Play" << endl
+                    << "3) Close" << endl
                     << "Choose: ";
 
         int choose;
@@ -34,12 +43,10 @@ int main() {
                 train();
                 break;
             case 2:
+                play();
                 break;
             case 3:
-                game();
-                break;
-            case 4:
-                play = false;
+                gameLoop = false;
                 break;
         }
 

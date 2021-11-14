@@ -3,17 +3,6 @@
  * @Since: 21/09/21
  */
 
-#include <algorithm>
-#include <cctype>
-#include <string>
-#include <iostream>
-#include <list>
-#include <fstream>
-#include <iomanip>
-#include <ctime>
-#include <sstream>
-#include <filesystem>
-#include "aiBoard.h"
 
 void train() {
 

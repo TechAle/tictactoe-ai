@@ -18,14 +18,17 @@ bool isWinning(const int table[9]) {
 
 // Check if we have filled the game (isnt this useless?)
 bool isFilled(const int table[9]) {
-    return std::any_of(&table[0], &table[9], [](int i) {return i == 0;});
+    for(int i = 0; i < 9; i++)
+        if (table[i] == 0)
+            return false;
+    return true;
 }
 
 // Join isFilled and isWinning in 1 function
-int isOver(const int table[9]) {
+bool isOver(const int table[9]) {
     if (isWinning(table))
-        return 1;
+        return true;
     if (isFilled(table))
-        return 2;
-    return 0;
+        return true;
+    return false;
 }

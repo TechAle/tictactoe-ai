@@ -18,17 +18,6 @@ public:
         std::fill(table, table+9, 0);
     }
 
-    // Start with a table that exists
-    explicit game(const int *initTable, int turn) {
-        for(int i = 0; i < 9; i++)
-            table[i] = *(initTable + i);
-        this->turn = turn;
-    }
-
-    int* getBoard() {
-        return &table[0];
-    }
-
     // Play a letter
     bool play(int num) {
         if (table[num] != 0)
@@ -63,5 +52,18 @@ public:
     bool isWinning() {
         return ::isWinning(this->table);
     }
+
+
+    /*
+// Start with a table that exists
+explicit game(const int *initTable, int turn) {
+    for(int i = 0; i < 9; i++)
+        table[i] = *(initTable + i);
+    this->turn = turn;
+}
+
+int* getBoard() {
+    return &table[0];
+}*/
 
 };

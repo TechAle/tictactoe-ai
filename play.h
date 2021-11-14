@@ -2,7 +2,13 @@
  * @Author: TechAle
  * @Since: 21/09/21
  */
+#include "aiBoard.h"
+
 using namespace std;
+
+void PlayerPlay(game game);
+
+void BotPlay(game game, aiBoard bot);
 
 void play() {
 
@@ -35,15 +41,27 @@ void play() {
 
     // Game loop
     game game;
-    while (game.isOver()) {
-        // Print game
-        game.print();
-        // Get input
-        do {
-            cout << endl << "Position: ";
-            cin >> choose;
-        }while (game.play(choose));
 
+    // Without bot
+    if (choose == 1) {
+        while (!game.isOver()) {
+            PlayerPlay(game);
+        }
+    // With bot
+    } else {
+        aiBoard bot = aiBoard();
+        while (!game.isOver()) {
+            if (first) {
+                PlayerPlay(game);
+                if (!game.isOver())
+                    BotPlay(game, bot);
+            } else {
+                BotPlay(game, bot);
+                if (!game.isOver())
+                    PlayerPlay(game);
+            }
+
+        }
     }
 
     if (game.isWinning())
@@ -52,4 +70,19 @@ void play() {
     cout << endl;
 
 
+}
+
+void BotPlay(game game, aiBoard bot) {
+
+}
+
+void PlayerPlay(game game) {
+    int choose = -1;
+    // Print game
+    game.print();
+    // Get input
+    do {
+        cout << endl << "Position: ";
+        cin >> choose;
+    } while (game.play(choose));
 }
