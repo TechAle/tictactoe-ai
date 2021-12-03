@@ -31,6 +31,7 @@ private:
                 std::copy(std::begin(this->table), std::end(this->table), std::begin(newTable));
                 // Set new values
                 newTable[i] = nextPlayer;
+                // Add new children
                 childrens.push_back(new aiBoard(newTable, this, round, i));
                 /*
                  * Old algo, good concept just not as optimized as it could be + too slow.
@@ -59,28 +60,33 @@ private:
 public:
 
     /*
-     * Struttura file:
-     * tabella
-     * padre
-     * vincite/perdite
+     * Structure file:
+     * tabel
+     * father
+     * wins/looses
      * tie
-     * giocate
+     * played
      * round
      *
-     * Diviso con |
+     * Divided with |
      */
     void printFile(ofstream& file) {
+        // Add the table
         for(auto i : table)
             file << i;
+        // Divide
         file << "|";
 
+        // If we dont have a father, null, else id
         if (father == nullptr)
             file << "null|";
         else file << father << "|";
 
+        // Add every informations
         file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame
                 << played   << "|" << round     << "\n";
 
+        // For every childrens, add the informations
         for(auto child : childrens)
             child->printFile(file);
 
@@ -115,27 +121,35 @@ public:
 
     // Update numbers of win
     void updateWin(bool circle) {
+        // If circle
         if (circle) {
             this->winCircle++;
             this->lostCross++;
         }
+        // If cross
         else {
             this->winCross++;
             this->lostCircle++;
         }
+        // Update played
         this->played++;
+        // Update father's win/loose
         if (this->father != nullptr)
             this->father->updateWin(circle);
     }
 
+    // Update tie
     void updateTie() {
         this->tieGame++;
         this->played++;
+        // Go back
         if (this->father != nullptr)
             this->father->updateTie();
     }
 
-
+    /*
+     * Old algo, i'll keep this here for maybe in the future i can re-use this concept
+     * This works just, it's really slow
     aiBoard* checkChildren(const int toCheck[9], aiBoard* aimCheck, int aimRound) {
         if (aimRound > aimCheck->round) {
             aiBoard* temp;
@@ -155,7 +169,7 @@ public:
         }
 
         return nullptr;
-    }
+    }*/
 
 
 

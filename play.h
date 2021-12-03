@@ -4,7 +4,13 @@
  */
 #include "aiBoard.h"
 
+
 using namespace std;
+
+#include <string>
+#include <iostream>
+#include <filesystem>
+namespace fs = std::__fs::filesystem;
 
 void PlayerPlay(game game);
 
@@ -49,7 +55,31 @@ void play() {
         }
     // With bot
     } else {
-        aiBoard bot = aiBoard();
+
+        cout << "1) Create new ai" << endl
+             << "2) Load new ai" << endl
+             << "Choose: ";
+
+        cin >> choose;
+
+        aiBoard bot;
+
+        if (choose == 2) {
+            string path = "./trains/";
+            int num = 0;
+            for (const auto & entry : fs::directory_iterator(path)) {
+                std::cout << entry.path() << std::endl;
+                string file = entry.path().string();
+
+            }
+
+            return;
+
+
+        } else {
+            bot = aiBoard();
+        }
+
         while (!game.isOver()) {
             if (first) {
                 PlayerPlay(game);
