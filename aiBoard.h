@@ -57,6 +57,8 @@ private:
     int played;
     // N^Round (used for "performance purpose" in the slow algo)
     int round;
+    // Our id
+    string id;
 public:
 
     /*
@@ -82,9 +84,12 @@ public:
             file << "null|";
         else file << father << "|";
 
+        // I also need the id of this
+        file << this << "|";
+
         // Add every informations
         file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame << "|"
-                << played   << "|" << round     << "|\n";
+                << played   << "|" << round     << "|";
 
         // For every childrens, add the informations
         for(auto child : childrens)
@@ -101,21 +106,58 @@ public:
         createChildrens();
     }
 
-    explicit aiBoard(const string& path) {
+    explicit aiBoard(const string& path) { // NOLINT(cppcoreguidelines-pro-type-member-init)
         ifstream fin (path);
         string     myStr;
 
-        getline(fin, myStr);
+        string tempFather;
+        aiBoard* toCheck = this;
 
-        this->loadString(myStr);
+        getline(fin, myStr);
+        this->father = nullptr;
+
+        this->loadString(myStr, tempFather);
 
         while(getline(fin, myStr))
         {
-            loadString(myStr);
+            aiBoard tempBoard = aiBoard(myStr, tempFather);
+
+            aiBoard* toAdd = whereAdd(toCheck, tempFather);
+
+            toAdd->childrens.push_back(new aiBoard(tempBoard.table, this, tempBoard.round, tempBoard.winCross, tempBoard.winCircle, tempBoard.tieGame,
+                                                  tempBoard.lostCircle, tempBoard.lostCross));
+            toCheck = toAdd->childrens.back();
+
         }
 
     }
 
+    aiBoard* whereAdd(aiBoard* toCheck, const string& id) {
+        aiBoard* output = toCheck;
+        for(auto i : toCheck->childrens) {
+
+        }
+        return output;
+    }
+
+    explicit aiBoard(const int* board, aiBoard* father, int round, int winCross, int winCircle, int tieGame, int lostCircle, int lostCross) {
+        for(int i = 0; i < 9; i++)
+            this->table[i] = *(board + i);
+        this->father = father;
+        this->round = round;
+        this->winCross = winCross;
+        this->winCircle = winCircle;
+        this->tieGame = tieGame;
+        this->lostCircle = lostCircle;
+        this->lostCross = lostCross;
+    }
+
+    explicit aiBoard(const string& toLoad, string& father) { // NOLINT(cppcoreguidelines-pro-type-member-init)
+        this->loadString(toLoad, father);
+    }
+
+
+    // Modified version of https://stackoverflow.com/questions/16826422/c-most-efficient-way-to-convert-string-to-int-faster-than-atoi/16826908
     static int fast_atoi( const string& str, int len )
     {
         int val = 0;
@@ -126,53 +168,53 @@ public:
         return val;
     }
 
-    void loadString(string values) {
+    void loadString(string values, string& fatherChange) {
         int stage = 1;
         int start = 10;
-        values.substr(0, 5);
 
         // Save table
         for(int i = 0; i < 9; i++) {
             this->table[i] = values[i] - '0';
         }
 
-        /*
-         * << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame
-                << played   << "|" << round     << "\n";
-         */
         for(int i = 10; i < values.length(); i++) {
             // If delimiter
             if (values[i] == '|') {
                 switch(stage++) {
                     // Father
                     case 1:
+                        fatherChange = values.substr(start, i - start - 1);
+                        break;
+                    // Our id
+                    case 2:
+                        this->id = values.substr(start + 1, i - start - 1);
                         break;
                     // Wins cross
-                    case 2:
+                    case 3:
                         this->winCross = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Wins circle
-                    case 3:
+                    case 4:
                         this->winCircle = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Lost cross
-                    case 4:
+                    case 5:
                         this->lostCross = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Lost circle
-                    case 5:
+                    case 6:
                         this->lostCircle = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Tie Game
-                    case 6:
+                    case 7:
                         this->tieGame = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Played
-                    case 7:
+                    case 8:
                         this->played = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                     // Round
-                    case 8:
+                    case 9:
                         this->round = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
                         break;
                 }
