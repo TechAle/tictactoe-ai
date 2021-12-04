@@ -3,6 +3,7 @@
  * @Since: 21/09/21
  */
 #include <list>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -89,7 +90,7 @@ public:
 
         // Add every informations
         file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame << "|"
-                << played   << "|" << round     << "|";
+                << played   << "|" << round     << "|\n";
 
         // For every childrens, add the informations
         for(auto child : childrens)
@@ -99,7 +100,7 @@ public:
 
     // First aiBoard, empty
     aiBoard() {
-        std::fill(table, table+9, 0);
+        fill(table, table+9, 0);
         this->father = nullptr;
         this->round = 0;
         played = -1;
@@ -122,25 +123,45 @@ public:
         {
             aiBoard tempBoard = aiBoard(myStr, tempFather);
 
-            aiBoard* toAdd = whereAdd(toCheck, tempFather);
+            aiBoard* toAdd = toCheck->whereAdd(tempFather, "");
 
-            toAdd->childrens.push_back(new aiBoard(tempBoard.table, this, tempBoard.round, tempBoard.winCross, tempBoard.winCircle, tempBoard.tieGame,
-                                                  tempBoard.lostCircle, tempBoard.lostCross));
+            toAdd->childrens.push_back(new aiBoard(tempBoard.table, toAdd, tempBoard.round, tempBoard.winCross, tempBoard.winCircle, tempBoard.tieGame,
+                                                  tempBoard.lostCircle, tempBoard.lostCross, tempBoard.played, tempBoard.id));
             toCheck = toAdd->childrens.back();
 
         }
 
+        int a = 0;
+
     }
 
-    aiBoard* whereAdd(aiBoard* toCheck, const string& id) {
-        aiBoard* output = toCheck;
-        for(auto i : toCheck->childrens) {
+    static bool check2String(const string& now, const string& toCheck) {
+        int len = now.length();
+        if (len != toCheck.length())
+            return false;
+        for(int i = 0; i < len; i++)
+            if (now[i] != toCheck[i])
+                return false;
+        return true;
+    }
+
+    aiBoard* whereAdd(const string& idCheck, const string& coming) {
+        if (check2String(this->id, idCheck))
+            return this;
+        else {
+            for (auto child : this->childrens) {
+                aiBoard *temp = child->whereAdd(idCheck, "");
+                if (temp != nullptr)
+                    return temp;
+            }
+            if (this->father != nullptr)
+                return this->father->whereAdd(idCheck, this->id);
+            else return this;
 
         }
-        return output;
     }
 
-    explicit aiBoard(const int* board, aiBoard* father, int round, int winCross, int winCircle, int tieGame, int lostCircle, int lostCross) {
+    explicit aiBoard(const int* board, aiBoard* father, int round, int winCross, int winCircle, int tieGame, int lostCircle, int lostCross, int played, string id) {
         for(int i = 0; i < 9; i++)
             this->table[i] = *(board + i);
         this->father = father;
@@ -150,6 +171,8 @@ public:
         this->tieGame = tieGame;
         this->lostCircle = lostCircle;
         this->lostCross = lostCross;
+        this->played = played;
+        this->id = move(id);
     }
 
     explicit aiBoard(const string& toLoad, string& father) { // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -183,7 +206,7 @@ public:
                 switch(stage++) {
                     // Father
                     case 1:
-                        fatherChange = values.substr(start, i - start - 1);
+                        fatherChange = values.substr(start, i - start);
                         break;
                     // Our id
                     case 2:
