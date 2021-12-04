@@ -83,8 +83,8 @@ public:
         else file << father << "|";
 
         // Add every informations
-        file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame
-                << played   << "|" << round     << "\n";
+        file    << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame << "|"
+                << played   << "|" << round     << "|\n";
 
         // For every childrens, add the informations
         for(auto child : childrens)
@@ -99,6 +99,88 @@ public:
         this->round = 0;
         played = -1;
         createChildrens();
+    }
+
+    explicit aiBoard(const string& path) {
+        ifstream fin (path);
+        string     myStr;
+
+        getline(fin, myStr);
+
+        this->loadString(myStr);
+
+        while(getline(fin, myStr))
+        {
+            loadString(myStr);
+        }
+
+    }
+
+    static int fast_atoi( const string& str, int len )
+    {
+        int val = 0;
+        for(int i = 0; i < len - 1; i++) {
+            char value = str[i];
+            val = val*10 + (value - '0');
+        }
+        return val;
+    }
+
+    void loadString(string values) {
+        int stage = 1;
+        int start = 10;
+        values.substr(0, 5);
+
+        // Save table
+        for(int i = 0; i < 9; i++) {
+            this->table[i] = values[i] - '0';
+        }
+
+        /*
+         * << winCross << "|" << winCircle << "|" << lostCross << "|" << lostCircle << "|" << tieGame
+                << played   << "|" << round     << "\n";
+         */
+        for(int i = 10; i < values.length(); i++) {
+            // If delimiter
+            if (values[i] == '|') {
+                switch(stage++) {
+                    // Father
+                    case 1:
+                        break;
+                    // Wins cross
+                    case 2:
+                        this->winCross = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Wins circle
+                    case 3:
+                        this->winCircle = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Lost cross
+                    case 4:
+                        this->lostCross = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Lost circle
+                    case 5:
+                        this->lostCircle = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Tie Game
+                    case 6:
+                        this->tieGame = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Played
+                    case 7:
+                        this->played = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                    // Round
+                    case 8:
+                        this->round = fast_atoi(values.substr(start + 1, i - start - 1), i - start);
+                        break;
+                }
+                start = i;
+            }
+        }
+
+
     }
 
     // New aiBoard
