@@ -93,38 +93,52 @@ void play() {
                     }
                 }
             }
+
+            // Make the player choose the file
             cout << "Choose: ";
             cin >> choose;
+            // If it's above, create one form 0
             if (choose > data.size())
                 bot = aiBoard();
             else {
+                // Else, load the bot
                 try {
                     bot = aiBoard(data[choose]);
+                // Lets prevent useless crashes
                 } catch (const std::exception& ex) {
                     bot = aiBoard();
                 }
             }
             return;
 
-
         } else {
+            // Create a new bot
             bot = aiBoard();
         }
 
+        // While the game it's not done
         while (!game.isOver()) {
+            // If We want to play first
             if (first) {
+                // Player
                 PlayerPlay(game);
+                // If it's not over
                 if (!game.isOver())
+                    // Bot play
                     BotPlay(game, bot);
             } else {
+                // Bot play
                 BotPlay(game, bot);
+                // If not over
                 if (!game.isOver())
+                    // Player play
                     PlayerPlay(game);
             }
 
         }
     }
 
+    // If someone is winning
     if (game.isWinning())
         cout << "Win: " << game.player();
     else cout << "Nobody won";
