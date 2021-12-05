@@ -5,6 +5,8 @@
 #include <list>
 #include <utility>
 #include <vector>
+#include "./utils/stringUtils.h"
+#include "./utils/mathUtils.h"
 
 using namespace std;
 
@@ -109,25 +111,33 @@ public:
         ifstream fin (path);
         string     myStr;
 
+        // String of the father of the node we are checking
         string tempFather;
+        // Last node we checked
         aiBoard* toCheck = this;
 
+        // Load the first node, the father
         getline(fin, myStr);
+        // Set our father as nullptr
         this->father = nullptr;
 
+        // Load every values
         this->loadString(myStr, tempFather);
 
+        // Load every line
         while(getline(fin, myStr))
         {
+            // Generate a temporary board
             aiBoard tempBoard = aiBoard(myStr, tempFather);
 
-            if (check2String(tempFather, "0x7ffeeefd6618"))
-                int a = 0;
-
+            // Find of which board the father is
             aiBoard* toAdd = toCheck->whereAdd(tempFather, "", true);
 
+            // Push a new children
             toAdd->childrens.push_back(new aiBoard(tempBoard.table, toAdd, tempBoard.round, tempBoard.winCross, tempBoard.winCircle, tempBoard.tieGame,
                                                    tempBoard.lostCircle, tempBoard.lostCross, tempBoard.played, tempBoard.id));
+
+            // Save the pointer of the last children we saved
             toCheck = toAdd->childrens.back();
 
         }
@@ -299,38 +309,6 @@ public:
             this->father->updateTie();
     }
 
-    // I have to do this because, for some reasons every functions mess up when we are working with pointers
-    static bool check2String(const string& now, const string& toCheck) {
-        //  Get length
-        int len = now.length();
-        // If it's not the same
-        if (len != toCheck.length())
-            // They are not the same
-            return false;
-        // Else
-        for(int i = 0; i < len; i++)
-            // If something is different
-            if (now[i] != toCheck[i])
-                // False
-                return false;
-        // Everything is the same
-        return true;
-    }
-
-    // Modified version of https://stackoverflow.com/questions/16826422/c-most-efficient-way-to-convert-string-to-int-faster-than-atoi/16826908
-    static int fast_atoi( const string& str, int len )
-    {
-        // Start from 0
-        int val = 0;
-        for(int i = 0; i < len - 1; i++) {
-            // Get the value
-            char value = str[i];
-            // Add the current value to the old one * 10
-            val = val*10 + (value - '0');
-        }
-        // Return
-        return val;
-    }
 
 };
 

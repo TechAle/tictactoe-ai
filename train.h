@@ -6,26 +6,13 @@
 
 void train() {
 
-    // Get if multithreading or not
-    int multithrading;
-    do {
-        cout    << endl
-                << "1) Sequential" << endl
-                << "2) Multithreading";
-        cin >> multithrading;
-    }while (multithrading != 1 && multithrading != 2);
+    int multithreading = requestInt("1) Sequential\n2) Multithreading", 2);
 
     // Start trainingAl
     aiBoard trainingSet = aiBoard();
 
     // Ask if he want to save
-    string salvataggio;
-    cout    << endl
-            << "Salvare? (si/no): ";
-    cin >> salvataggio;
-    // ToLower
-    transform(salvataggio.begin(), salvataggio.end(), salvataggio.begin(),
-              [](unsigned char c){ return std::tolower(c); });
+    string salvataggio = requestString("Salvare? (si/no)");
 
     // If he want to save
     if (salvataggio.compare("si") == 0) { // NOLINT(readability-string-compare)

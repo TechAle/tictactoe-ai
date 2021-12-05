@@ -5,7 +5,7 @@
 #include "aiBoard.h"
 
 /*
- * TODO create new utils where you add "askInputs" and "hasExtension"
+ * TODO add license
  */
 
 using namespace std;
@@ -59,12 +59,7 @@ void play() {
     // With bot
     } else {
 
-        // Ask what he want
-        cout << "1) Create new ai" << endl
-             << "2) Load new ai" << endl
-             << "Choose: ";
-
-        cin >> choose;
+        choose = requestInt("1) Create new ai\n2) Load new ai", 2);
 
         aiBoard bot;
 
@@ -76,21 +71,10 @@ void play() {
             for (const auto & entry : fs::directory_iterator(path)) {
                 // Get file
                 string file = entry.path().string();
-                int len = file.length();
-                // If it can contains the extension we want
-                if ( len > 4) {
-                    // This is horrible
-                    // Check if the extension is .train
-                    if (file.at(len - 1) == 'n' &&
-                        file.at(len - 2) == 'i' &&
-                        file.at(len - 3) == 'a' &&
-                        file.at(len - 4) == 'r' &&
-                        file.at(len - 5) == 't' &&
-                        file.at(len - 6) == '.') {
-                        // Print
-                        cout << data.size() << ") " << file << endl;
-                        data.push_back(file);
-                    }
+                if (hasExtension(file, ".train")) {
+                    // Print
+                    cout << data.size() << ") " << file << endl;
+                    data.push_back(file);
                 }
             }
 

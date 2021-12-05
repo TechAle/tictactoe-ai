@@ -26,16 +26,8 @@ int main() {
     // Main loop
     while (gameLoop) {
 
-        // Choose
-        cout        << endl
-                    << "Select option:" << endl
-                    << "1) Train" << endl
-                    << "2) Play" << endl
-                    << "3) Close" << endl
-                    << "Choose: ";
 
-        int choose;
-        cin >> choose;
+        int choose = requestInt("Select option:\n1) Train\n2) Play\n3) Close", 3);
 
         // Switch looks good
         switch(choose) {

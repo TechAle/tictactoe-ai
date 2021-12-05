@@ -1,4 +1,8 @@
-#include <algorithm>
+/*
+ * @Author: TechAle
+ * @Since: 05/11/21
+ */
+
 
 // Check if someone is winning
 bool isWinning(const int table[9]) {

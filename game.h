@@ -2,7 +2,7 @@
  * @Author: TechAle
  * @Since: 21/09/21
  */
-#include "gameUtils.h"
+#include "utils/gameUtils.h"
 using namespace std;
 class game {
 private:
