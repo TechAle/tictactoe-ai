@@ -123,7 +123,10 @@ public:
         {
             aiBoard tempBoard = aiBoard(myStr, tempFather);
 
-            aiBoard* toAdd = toCheck->whereAdd(tempFather, "");
+            if (check2String(tempFather, "0x7ffeeefd6618"))
+                int a = 0;
+
+            aiBoard* toAdd = toCheck->whereAdd(tempFather, "", true);
 
             toAdd->childrens.push_back(new aiBoard(tempBoard.table, toAdd, tempBoard.round, tempBoard.winCross, tempBoard.winCircle, tempBoard.tieGame,
                                                   tempBoard.lostCircle, tempBoard.lostCross, tempBoard.played, tempBoard.id));
@@ -131,7 +134,6 @@ public:
 
         }
 
-        int a = 0;
 
     }
 
@@ -145,20 +147,23 @@ public:
         return true;
     }
 
-    aiBoard* whereAdd(const string& idCheck, const string& coming) {
+    aiBoard* whereAdd(const string& idCheck, const string& coming, bool up) {
         if (check2String(this->id, idCheck))
             return this;
         else {
             for (auto child : this->childrens) {
-                aiBoard *temp = child->whereAdd(idCheck, "");
+                aiBoard *temp = child->whereAdd(idCheck, "", false);
                 if (temp != nullptr)
                     return temp;
             }
-            if (this->father != nullptr)
-                return this->father->whereAdd(idCheck, this->id);
+            if (this->father != nullptr) {
+                if (up)
+                    return this->father->whereAdd(idCheck, this->id, true);
+            }
             else return this;
 
         }
+        return nullptr;
     }
 
     explicit aiBoard(const int* board, aiBoard* father, int round, int winCross, int winCircle, int tieGame, int lostCircle, int lostCross, int played, string id) {
