@@ -15,9 +15,9 @@ using namespace std;
 #include <filesystem>
 namespace fs = std::__fs::filesystem;
 
-void PlayerPlay(game game);
+void PlayerPlay(game* game);
 
-void BotPlay(game game, aiBoard bot);
+void BotPlay(game* game, aiBoard* bot);
 
 void play() {
 
@@ -54,7 +54,7 @@ void play() {
     // Without bot
     if (choose == 1) {
         while (!game.isOver()) {
-            PlayerPlay(game);
+            PlayerPlay(&game);
         }
     // With bot
     } else {
@@ -105,18 +105,18 @@ void play() {
             // If We want to play first
             if (first) {
                 // Player
-                PlayerPlay(game);
+                PlayerPlay(&game);
                 // If it's not over
                 if (!game.isOver())
                     // Bot play
-                    BotPlay(game, bot);
+                    BotPlay(&game, &bot);
             } else {
                 // Bot play
-                BotPlay(game, bot);
+                BotPlay(&game, &bot);
                 // If not over
                 if (!game.isOver())
                     // Player play
-                    PlayerPlay(game);
+                    PlayerPlay(&game);
             }
 
         }
@@ -131,17 +131,17 @@ void play() {
 
 }
 
-void BotPlay(game game, aiBoard bot) {
+void BotPlay(game* game, aiBoard* bot) {
 
 }
 
-void PlayerPlay(game game) {
+void PlayerPlay(game* game) {
     int choose = -1;
     // Print game
-    game.print();
+    game->print();
     // Get input
     do {
         cout << endl << "Position: ";
         cin >> choose;
-    } while (game.play(choose));
+    } while (game->play(choose));
 }
