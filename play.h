@@ -17,7 +17,7 @@ namespace fs = std::__fs::filesystem;
 
 void PlayerPlay(game* game);
 
-void BotPlay(game* game, aiBoard* bot);
+void BotPlay(game* game, aiBoard* bot, aiBoard* checkpoint);
 
 void play() {
 
@@ -37,15 +37,7 @@ void play() {
     // Choose if starting first or last
     bool first = true;
     if (choose == 2) {
-        while(choose != 1 && choose != 2) {
-            cout    << endl
-                    << "1) Start first" << endl
-                    << "2) Start last" << endl
-                    << "Choose: ";
-
-            cin >> choose;
-        }
-        first = (choose == 1);
+        first = requestInt("1) Start first\n2) Start last", 2) == 1;
     }
 
     // Game loop
@@ -62,6 +54,7 @@ void play() {
         choose = requestInt("1) Create new ai\n2) Load new ai", 2);
 
         aiBoard bot;
+        aiBoard* checkpoint = nullptr;
 
         // If second
         if (choose == 2) {
@@ -93,7 +86,6 @@ void play() {
                     bot = aiBoard();
                 }
             }
-            return;
 
         } else {
             // Create a new bot
@@ -109,10 +101,10 @@ void play() {
                 // If it's not over
                 if (!game.isOver())
                     // Bot play
-                    BotPlay(&game, &bot);
+                    BotPlay(&game, &bot, checkpoint);
             } else {
                 // Bot play
-                BotPlay(&game, &bot);
+                BotPlay(&game, &bot, checkpoint);
                 // If not over
                 if (!game.isOver())
                     // Player play
@@ -131,7 +123,10 @@ void play() {
 
 }
 
-void BotPlay(game* game, aiBoard* bot) {
+void BotPlay(game* game, aiBoard* bot, aiBoard* checkpoint) {
+
+    bot->choosePosition(game->getTable(), game->player(), checkpoint);
+
 
 }
 

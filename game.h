@@ -27,6 +27,10 @@ public:
         return false;
     }
 
+    int* getTable() {
+        return this->table;
+    }
+
     // Print the game
     void print() {
         for(int i = 0; i < 3; i++) {

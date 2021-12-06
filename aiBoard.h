@@ -244,6 +244,56 @@ public:
         return nullptr;
     }
 
+    int choosePosition(const int* tableNow, bool isCross, aiBoard* checkpoint) {
+
+        // The table we are going to check for the best
+        aiBoard* nowCheck = checkpoint == nullptr ? this : checkpoint;
+
+        vector<vector<int> > toCheck;
+        int player = 0;
+
+        for(int i = 0; i < 9; i++)
+            if (*(tableNow + i) != 0) {
+                toCheck.push_back(vector<int>{i,*(tableNow + i)});
+            }
+
+        while (!toCheck.empty()) {
+            for(int i = 0; i < toCheck.size(); i++) {
+                if (toCheck[i][1] == player + 1) {
+                    for (auto child : nowCheck->childrens) {
+                        if (child->table[toCheck[i][0]] == player + 1) {
+                            nowCheck = child;
+                            toCheck.erase(toCheck.begin() + i);
+                            i--;
+                            player = (player + 1) % 2;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        checkpoint = nowCheck;
+        return -1;
+    }
+
+    static bool isSame(const int* arr1, const int* arr2) {
+        for(int i = 0; i < 9; i++)
+            if (arr1[i] != 0 && arr2[i] == 0)
+                return false;
+        return true;
+    }
+
+    static bool isBetter(aiBoard* bestNow, aiBoard* newToCheck, bool isCross) {
+        if (isCross) {
+            if (bestNow->winCross - bestNow->lostCross < newToCheck->winCross - newToCheck->lostCross)
+                return true;
+        } else {
+            if (bestNow->winCircle - bestNow->lostCircle < newToCheck->winCircle - newToCheck->lostCircle)
+                return true;
+        }
+        return true;
+    }
 
     /*
  * Structure file:
