@@ -249,22 +249,38 @@ public:
         // The table we are going to check for the best
         aiBoard* nowCheck = checkpoint == nullptr ? this : checkpoint;
 
+        /*
+         * This contains everything we have to check.
+         * It's a vector of a vector that contains
+         * 1^ Index: number of the slot of the table
+         * 2^ Index: Player
+         */
         vector<vector<int> > toCheck;
+        // Who has to play
         int player = 0;
 
+        // Add everything we have to check
         for(int i = 0; i < 9; i++)
             if (*(tableNow + i) != 0) {
                 toCheck.push_back(vector<int>{i,*(tableNow + i)});
             }
 
+        // Until we have checked everything
         while (!toCheck.empty()) {
+            // Iterate for every options on toCheck
             for(int i = 0; i < toCheck.size(); i++) {
+                // If the player is the one we want
                 if (toCheck[i][1] == player + 1) {
+                    // Iterate for every children
                     for (auto child : nowCheck->childrens) {
+                        // If the player in the correct idx is the one we want
                         if (child->table[toCheck[i][0]] == player + 1) {
+                            // Set this as the new one we are going to check
                             nowCheck = child;
+                            // Remove
                             toCheck.erase(toCheck.begin() + i);
                             i--;
+                            // Change the player
                             player = (player + 1) % 2;
                             break;
                         }
@@ -273,15 +289,28 @@ public:
             }
         }
 
-        checkpoint = nowCheck;
-        return -1;
-    }
+        /*
+         * For choosing which one we are going to start with
+         * we check for every children which one has more wins the loose
+         * And, if at the end the value is negative
+         * We check for tie
+         */
+        aiBoard* bestNow = nowCheck->childrens.front();
+        for(int i = 1; i < nowCheck->childrens.size(); i++) {
+            if (isBetter(bestNow, nowCheck->childrens.at(i), isCross))
+                bestNow = nowCheck->childrens.at(i);
+        }
 
-    static bool isSame(const int* arr1, const int* arr2) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
+        checkpoint = nowCheck;
+#pragma clang diagnostic pop
+        // Return it
         for(int i = 0; i < 9; i++)
-            if (arr1[i] != 0 && arr2[i] == 0)
-                return false;
-        return true;
+            if (bestNow->table[i] != bestNow->father->table[i])
+                return i;
+
+        return -1;
     }
 
     static bool isBetter(aiBoard* bestNow, aiBoard* newToCheck, bool isCross) {

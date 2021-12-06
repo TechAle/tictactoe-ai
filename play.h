@@ -125,8 +125,9 @@ void play() {
 
 void BotPlay(game* game, aiBoard* bot, aiBoard* checkpoint) {
 
-    bot->choosePosition(game->getTable(), game->player(), checkpoint);
-
+    game->play(
+            bot->choosePosition(game->getTable(), game->player(), checkpoint)
+    );
 
 }
 
